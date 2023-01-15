@@ -191,10 +191,7 @@
       })
           .done(function (received_data) {
               // 戻ってきたのはJSON（文字列）
-              var dict = JSON.parse(received_data); // JSONを連想配列にする
-              // 以下、Javascriptで料理する
-              var answer = dict["name"];
-              var invoice_no = dict["invoice_no"];
+              var dict = JSON.parse(received_data);
               var encoded_string = dict["encoded_string"];
               console.log("encoded_string: " + encoded_string);
 

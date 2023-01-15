@@ -163,36 +163,24 @@ def index():
 @app.route("/call_from_ajax", methods=["POST"])
 def callfromajax():
     if request.method == "POST":
-        # ここにPythonの処理を書く
-        # app.logger.error("send_data: " + str(request.form.getlist()))
-        # app.logger.error("send_data2: " + str(request.form))
-        print("ここ: " + str(request.form["invoiceNo"]))
-        # for key, value in request.form.items():
-        #     print("key: " + key, "value:" + value)
-
         try:
             encoded_string = ""
             filename = f'output_{request.form["fileSpecNo"]}.pdf'
-            print(f"filename: {filename}")
-            company = "Fast Accounting Co."
-            name = "岡崎優尋"
             invoice_no = request.form["invoiceNo"]
             page_layout.add(_build_invoice_information(**request.form))
 
             # Empty paragraph for spacing
             page_layout.add(Paragraph(" "))
-            with open(filename, "wb") as pdf_file_handle:
+            with open(f"app/tmp/{filename}", "wb") as pdf_file_handle:
                 PDF.dumps(pdf_file_handle, pdf)
                 # logging.warning("encoded_string: " + str(encoded_string))
         except Exception as e:
             # message = str(e)
             print(e)
-        with open("output.pdf", "rb") as pdf_file:
+        with open(f"app/tmp/{filename}", "rb") as pdf_file:
             encoded_string = base64.b64encode(pdf_file.read())
-        # encoded_string = base64.b64encode("../output.pdf")
-        # app.logger.error(encoded_string)
+
         dict = {
-            "name": name,
             "invoice_no": invoice_no,
             "encoded_string": encoded_string.decode(),
         }  # 辞書
