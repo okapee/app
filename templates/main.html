@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block main %}
+    <div class="jumbotron jumbotron-fluid text-white">
+        <div class="container p-4">
+            <h1 class="display-4">こんにちは!</h1>
+            <p class="lead">
+                このサイトはPeppolのデジタルインボイスを誰でもかんたんにつくれるようにしたものです。
+            </p>
+            <a class="btn btn-outline-primary btn-lg" href="#" role="button">JP PINTの仕様はこちら</a>
+        </div>
+    </div>
+    <div class="container mt-2">
+        <div class="row" style="height: 1000px">
+            <div class="col-xs-12 col-lg-4 h-100" ; font-size: 20px">
+                <div class="form-group">
+                    <label>請求書番号：</label>
+                    <input id="inputbox" type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>発行日：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>取引日：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>登録番号：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>請求元：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>登録状況：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>登録社名/氏名：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>支払期日：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>支払条件等：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>振込先銀行名：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>支店名：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>口座種別：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>口座番号：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>口座名義：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>請求先番号：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>請求先：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>登録社名/氏名：</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary mt-2" onclick="send_to_python()">
+                    生成
+                </button>
+                <input type="button" id="reset" class="btn btn-primary mt-2" value="リセット" onclick="reset()" /><br />
+                JP PINTフォーマットでのXMLファイルのダウンロードは<a src="http://www.google.com" class="mt-4 pt-4">こちら</a>
+            </div>
+            <div id="result" class="col-lg-8 h-100 tensen">
+                ここに生成されたPDFが表示されます。
+            </div>
+        </div>
+    
+        <script type="text/javascript">
+            function send_to_python() {
+                var send_data = $("#inputbox").val();
+                $.ajax("/call_from_ajax", {
+                    type: "post",
+                    data: { data: send_data }, // 連想配列をPOSTする
+                })
+                    .done(function (received_data) {
+                        // 戻ってきたのはJSON（文字列）
+                        var dict = JSON.parse(received_data); // JSONを連想配列にする
+                        // 以下、Javascriptで料理する
+                        var answer = dict["name"];
+                        var invoice_no = dict["invoice_no"];
+                        var encoded_string = dict["encoded_string"];
+                        console.log("encoded_string: " + encoded_string);
+
+                        // PDFを表示
+                        $("#result").removeClass("tensen");
+                        $("#result").html(
+                            '<embed type="application/pdf" src="data:application/pdf;base64,' +
+                            encoded_string +
+                            '"><a href="{{url_for('pdfdownload')}}">PDFをダウンロード</a>'
+                        );
+                    })
+                    .fail(function () {
+                        console.log("失敗");
+                    });
+            }
+
+            function reset() {
+                //これは普通のJavaScript（jQuery）
+                $("#inputbox").val("");
+                $("#result").text("");
+            }
+        </script>
+{% endblock %}
