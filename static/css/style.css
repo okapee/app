@@ -1,5 +1,5 @@
 body {
-    padding-top: 54px;
+    margin: 2px;
 }
 
 embed {
@@ -21,4 +21,8 @@ embed {
     border: dotted 2px rgb(100, 100, 100);
     text-align: center;
     padding: 20% 0;
+}
+
+.showpdf {
+    height: 100%;
 }

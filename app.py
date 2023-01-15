@@ -6,6 +6,7 @@ from flask import (
     make_response,
     send_from_directory,
 )
+from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from logging.config import dictConfig
@@ -43,7 +44,7 @@ page_layout.vertical_margin = page.get_page_info().get_height() * Decimal(0.02)
 # add an Image
 page_layout.add(
     Image(
-        Path("images/fastaccounting.png"),
+        Path("app/images/fastaccounting.png"),
         width=Decimal(250),
         height=Decimal(30),
     )
@@ -76,7 +77,8 @@ page_layout.add(
 )
 
 
-def _build_invoice_information():
+def _build_invoice_information(**kwargs):
+    print(f"kwargs: {kwargs}")
     table_001 = Table(number_of_rows=5, number_of_columns=3)
     table_001.add(Paragraph("[Street Address]"))
     table_001.add(
@@ -92,7 +94,8 @@ def _build_invoice_information():
             "Invoice #", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
         )
     )
-    table_001.add(Paragraph("%d" % random.randint(1000, 10000)))
+    print(f'invoiceNo: {kwargs["invoiceNo"]}, type: {type(kwargs["invoiceNo"])}')
+    table_001.add(Paragraph("%s" % kwargs["invoiceNo"]))
     table_001.add(Paragraph("[Phone]"))
     table_001.add(
         Paragraph(
@@ -100,12 +103,6 @@ def _build_invoice_information():
         )
     )
     table_001.add(Paragraph("%d/%d/%d" % (now.day, now.month, now.year)))
-    table_001.add(Paragraph("[Email Address]"))
-    table_001.add(Paragraph(" "))
-    table_001.add(Paragraph(" "))
-    table_001.add(Paragraph("[Company Website]"))
-    table_001.add(Paragraph(" "))
-    table_001.add(Paragraph(" "))
 
     table_001.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))
     table_001.no_borders()
@@ -136,6 +133,7 @@ dictConfig(
 
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 # Cloud SQLに接続し、テーブルを作成する(テーブルは予めコンソールから作成しておくこと!)
 # connection = pymysql.connect(host='34.84.231.41', user='root', password='Gn4+*5biC8=1nACI', db='peppol-builder')
@@ -167,18 +165,23 @@ def callfromajax():
     if request.method == "POST":
         # ここにPythonの処理を書く
         # app.logger.error("send_data: " + str(request.form.getlist()))
-        app.logger.error("send_data2: " + str(request.form))
+        # app.logger.error("send_data2: " + str(request.form))
+        print("ここ: " + str(request.form["invoiceNo"]))
+        # for key, value in request.form.items():
+        #     print("key: " + key, "value:" + value)
 
         try:
             encoded_string = ""
+            filename = f'output_{request.form["fileSpecNo"]}.pdf'
+            print(f"filename: {filename}")
             company = "Fast Accounting Co."
             name = "岡崎優尋"
-            invoice_no = request.form["data"]
-            page_layout.add(_build_invoice_information())
+            invoice_no = request.form["invoiceNo"]
+            page_layout.add(_build_invoice_information(**request.form))
 
             # Empty paragraph for spacing
             page_layout.add(Paragraph(" "))
-            with open("output.pdf", "wb") as pdf_file_handle:
+            with open(filename, "wb") as pdf_file_handle:
                 PDF.dumps(pdf_file_handle, pdf)
                 # logging.warning("encoded_string: " + str(encoded_string))
         except Exception as e:
