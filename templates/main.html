@@ -12,79 +12,82 @@
     <div class="container mt-2">
         <div class="row" style="height: 1000px">
             <div class="col-xs-12 col-lg-4 h-100" ; font-size: 20px">
-                <div class="form-group">
-                    <label>請求書番号：</label>
-                    <input id="inputbox" type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>発行日：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>取引日：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>登録番号：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>請求元：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>登録状況：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>登録社名/氏名：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>支払期日：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>支払条件等：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>振込先銀行名：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>支店名：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>口座種別：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>口座番号：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>口座名義：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>請求先番号：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>請求先：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>登録社名/氏名：</label>
-                    <input type="text" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-primary mt-2" onclick="send_to_python()">
-                    生成
-                </button>
+                <form id="invoice-form" method="post" onsubmit="return false;">
+                    <div class="form-group">
+                        <label>請求書番号：</label>
+                        <input id="inputbox" type="text" name="invoiceNo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>発行日：</label>
+                        <input type="text" name="issueDate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>取引日：</label>
+                        <input type="text" name="dealDate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>登録番号：</label>
+                        <input type="text" name="registerNo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>請求元：</label>
+                        <input type="text" name="issuer" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>登録状況：</label>
+                        <input type="text" name="registerStatus" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>登録社名/氏名：</label>
+                        <input type="text" name="registerCo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>支払期日：</label>
+                        <input type="text" name="dueDate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>支払条件等：</label>
+                        <input type="text" name="payCond" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>振込先銀行名：</label>
+                        <input type="text" name="bank" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>支店名：</label>
+                        <input type="text" name="bBranch" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>口座種別：</label>
+                        <input type="text" name="accountType" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>口座番号：</label>
+                        <input type="text" name="accountNo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>口座名義：</label>
+                        <input type="text" name="accountName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>請求先番号：</label>
+                        <input type="text" name="issuerNo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>請求先：</label>
+                        <input type="text" name="issuerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>登録社名/氏名：</label>
+                        <input type="text" name="registerName" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">
+                        生成
+                    </button>
+                </form>
                 <input type="button" id="reset" class="btn btn-primary mt-2" value="リセット" onclick="reset()" /><br />
                 JP PINTフォーマットでのXMLファイルのダウンロードは<a src="http://www.google.com" class="mt-4 pt-4">こちら</a>
+                
             </div>
             <div id="result" class="col-lg-8 h-100 tensen">
                 ここに生成されたPDFが表示されます。
@@ -92,11 +95,16 @@
         </div>
     
         <script type="text/javascript">
-            function send_to_python() {
-                var send_data = $("#inputbox").val();
-                $.ajax("/call_from_ajax", {
-                    type: "post",
-                    data: { data: send_data }, // 連想配列をPOSTする
+            $('#invoice-form').on('submit', function (e) {
+                var form_data = $('#invoice-form');
+                var serialized_data = form_data.serializeArray();
+                var send_data = JSON.stringify(serialized_data);
+                console.log(`send_data: ${send_data}`);
+                $.ajax({
+                    type: "POST",
+                    url: "/call_from_ajax",
+                    dataType: 'json',
+                    data: send_data,
                 })
                     .done(function (received_data) {
                         // 戻ってきたのはJSON（文字列）
@@ -112,18 +120,12 @@
                         $("#result").html(
                             '<embed type="application/pdf" src="data:application/pdf;base64,' +
                             encoded_string +
-                            '"><a href="{{url_for('pdfdownload')}}">PDFをダウンロード</a>'
-                        );
+                            '"><a href="{{url_for('pdfdownload')}}">PDFをダウンロード</a>');
                     })
                     .fail(function () {
                         console.log("失敗");
                     });
-            }
-
-            function reset() {
-                //これは普通のJavaScript（jQuery）
-                $("#inputbox").val("");
-                $("#result").text("");
-            }
+                    e.preventDefault();
+            });
         </script>
 {% endblock %}

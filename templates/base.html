@@ -10,40 +10,17 @@
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQT wFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     {% block header %}
     <title>Peppol Builder</title>
     {% endblock %}
-
-    <style>
-      body {
-        padding-top: 54px;
-      }
-
-      embed {
-        width: 100%;
-        height: 100%;
-      }
-
-      .jumbotron {
-        background-image: url("https://picsum.photos/600/400");
-        background-size: cover;
-        background-position: center 60%;
-      }
-
-      .top-image {
-        color: "white";
-      }
-
-      .tensen {
-        border: dotted 2px rgb(100, 100, 100);
-        text-align: center;
-        padding: 20% 0;
-      }
-    </style>
   </head>
 
   <body>
@@ -76,19 +53,16 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbar-header">
+      <!-- <div class="collapse navbar-collapse" id="navbar-header">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <a class="nav-link active" href="#">ホーム</a>
           </li>
           <li class="nav-item"><a class="nav-link" a href="#">リンク</a></li>
         </ul>
-      </div>
+      </div> -->
     </nav>
 
     {% block main %} {% endblock %}
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </body>
 </html>

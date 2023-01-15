@@ -166,6 +166,9 @@ def index():
 def callfromajax():
     if request.method == "POST":
         # ここにPythonの処理を書く
+        # app.logger.error("send_data: " + str(request.form.getlist()))
+        app.logger.error("send_data2: " + str(request.form))
+
         try:
             encoded_string = ""
             company = "Fast Accounting Co."
@@ -184,7 +187,7 @@ def callfromajax():
         with open("output.pdf", "rb") as pdf_file:
             encoded_string = base64.b64encode(pdf_file.read())
         # encoded_string = base64.b64encode("../output.pdf")
-        app.logger.error(encoded_string)
+        # app.logger.error(encoded_string)
         dict = {
             "name": name,
             "invoice_no": invoice_no,
