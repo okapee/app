@@ -28,6 +28,19 @@
     >
   </div>
 </div>
+
+<div class="newstopic">
+<ul>
+  <li>
+    <a href="#">
+      <span>新着</span>
+      <time datetime="2023-01-01">[ 2023.01.01 ]</time>
+      <p class="new">リリース</p>
+    </a>
+  </li>
+</ul>
+</div>
+
 <div class="container mt-2">
   <div class="row" style="height: 1000px">
     <div class="col-xs-12 col-lg-4 h-100" ; font-size: 20px">
@@ -44,7 +57,7 @@
       <div class="form-group">
         <label>発行日：</label>
         <input
-          id="issuerDate"
+          id="issueDate"
           type="text"
           name="issueDate"
           class="form-control"
@@ -68,6 +81,14 @@
         <input id="issuer" type="text" name="issuer" class="form-control" />
       </div>
       <div class="form-group">
+        <label>請求元住所：</label>
+        <input id="issuerAddress" type="text" name="issuerAddress" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>請求元TEL：</label>
+        <input id="issuerTel" type="text" name="issuerTel" class="form-control" />
+      </div>
+      <div class="form-group">
         <label>登録状況：</label>
         <input
           id="registerStatus"
@@ -88,6 +109,10 @@
       <div class="form-group">
         <label>支払期日：</label>
         <input id="dueDate" type="text" name="dueDate" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>請求額：</label>
+        <input id="amount" type="text" name="amount" class="form-control" />
       </div>
       <div class="form-group">
         <label>支払条件等：</label>
@@ -141,15 +166,6 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
-        <label>登録社名/氏名：</label>
-        <input
-          id="registerName"
-          type="text"
-          name="registerName"
-          class="form-control"
-        />
-      </div>
       <button type="submit" class="btn btn-primary mt-2">生成</button>
       <input
         type="button"
@@ -173,6 +189,7 @@
 {% block scripts %} {{ super() }}
 <script type="text/javascript">
   $('#invoice-form').on('submit', function (e) {
+      e.preventDefault();
       var form_data = $('#invoice-form');
       var serialized_data = form_data.serializeArray();
       var send_data = JSON.stringify(serialized_data);
@@ -184,9 +201,20 @@
             fileSpecNo: Math.random().toString(32).substring(2),
             invoiceNo: $('#invoiceNo').val(),
             issueDate: $('#issueDate').val(),
+            issuerName: $('#issuerName').val(),
+            issuerAddress: $('#issuerAddress').val(),
+            issuerTel: $('#issuerTel').val(),
+            amount: $('#amount').val(),
+            dueDate: $('#dueDate').val(),
+            registerCo: $('#registerCo').val(),
             dealDate: $('#dealDate').val(),
             registerNo: $('#registerNo').val(),
             issuer: $('#issuer').val(),
+            bank: $('#bank').val(),
+            bBranch: $('#bBranch').val(),
+            accountType: $('#accountType').val(),
+            accountNo: $('#accountNo').val(),
+            accountName: $('#accountName').val(),
           },
       })
           .done(function (received_data) {
@@ -206,7 +234,6 @@
           .fail(function () {
               console.log("失敗");
           });
-          e.preventDefault();
   });
 </script>
 {% endblock %} {% endblock %}

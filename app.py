@@ -1,3 +1,4 @@
+from pathlib import Path
 from flask import (
     Flask,
     request,
@@ -15,102 +16,28 @@ import random
 import json
 import base64
 import logging
-from borb.pdf.pdf import PDF
-from borb.pdf import Document
-from borb.pdf.page.page import Page
-from borb.pdf.canvas.layout.page_layout.multi_column_layout import SingleColumnLayout
-from borb.pdf.canvas.layout.image.image import Image
-from borb.pdf.canvas.layout.table.fixed_column_width_table import (
-    FixedColumnWidthTable as Table,
-)
-from borb.pdf import X11Color
-from borb.pdf.canvas.layout.text.paragraph import Paragraph
-from borb.pdf.canvas.layout.layout_element import Alignment
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4, portrait
+from reportlab.lib.units import cm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
 
 MIMETYPE = "application/xml"
 
-# Create document
-pdf = Document()
+app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
-page = Page()
-pdf.add_page(page)
+# construct the Font object
+pdfmetrics.registerFont(TTFont("kokuri", "app/static/font/kokuri-subset.ttf"))
 
-page_layout = SingleColumnLayout(page)
-page_layout.vertical_margin = page.get_page_info().get_height() * Decimal(0.02)
+file_path = ''
 
-# add an Image
-page_layout.add(
-    Image(
-        Path("app/images/fastaccounting.png"),
-        width=Decimal(250),
-        height=Decimal(30),
-    )
-)
-
-# create a FixedColumnWidthTable
-
-page_layout.add(
-    Paragraph("Invoice", horizontal_alignment=Alignment.CENTERED, font_size=Decimal(30))
-)
-
-page_layout.add(
-    Table(number_of_columns=4, number_of_rows=3)
-    .add(Paragraph("Item"))
-    .add(Paragraph("Num"))
-    .add(Paragraph("Unit Price"))
-    .add(Paragraph("Amount"))
-    .add(Paragraph("Tesla"))
-    .add(Paragraph("1"))
-    .add(Paragraph("5,000,000"))
-    .add(Paragraph("5,500,000"))
-    .add(Paragraph("Ferary"))
-    .add(Paragraph("1"))
-    .add(Paragraph("10,000,000"))
-    .add(Paragraph("11,000,000"))
-    # set padding on all (implicit) TableCell objects in the FixedColumnWidthTable
-    .set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))
-    # apply 'zebra striping' to the FixedColumnWidthTable
-    .even_odd_row_colors(X11Color("LightGray"), X11Color("White"))
-)
-
-
-def _build_invoice_information(**kwargs):
-    print(f"kwargs: {kwargs}")
-    table_001 = Table(number_of_rows=5, number_of_columns=3)
-    table_001.add(Paragraph("[Street Address]"))
-    table_001.add(
-        Paragraph("Date", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT)
-    )
-    now = datetime.now()
-    table_001.add(Paragraph("%d/%d/%d" % (now.day, now.month, now.year)))
-    # table_001.add(Paragraph("Company"))
-    # table_001.add(Paragraph("%s" % "FAST ACCOUNTING"))
-    table_001.add(Paragraph("[City, State, ZIP Code]"))
-    table_001.add(
-        Paragraph(
-            "Invoice #", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
-        )
-    )
-    print(f'invoiceNo: {kwargs["invoiceNo"]}, type: {type(kwargs["invoiceNo"])}')
-    table_001.add(Paragraph("%s" % kwargs["invoiceNo"]))
-    table_001.add(Paragraph("[Phone]"))
-    table_001.add(
-        Paragraph(
-            "Due Date", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
-        )
-    )
-    table_001.add(Paragraph("%d/%d/%d" % (now.day, now.month, now.year)))
-
-    table_001.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))
-    table_001.no_borders()
-    return table_001
-
-
-# import pymysql
-
+# font_path = Path(__file__).parent / "static" / "font" / "kokuri-subset.ttf"
+# custom_font = TrueTypeFont.true_type_font_from_file(font_path)
 
 dictConfig(
     {
@@ -131,10 +58,6 @@ dictConfig(
     }
 )
 
-
-app = Flask(__name__)
-bootstrap = Bootstrap(app)
-
 # Cloud SQLに接続し、テーブルを作成する(テーブルは予めコンソールから作成しておくこと!)
 # connection = pymysql.connect(host='34.84.231.41', user='root', password='Gn4+*5biC8=1nACI', db='peppol-builder')
 # with connection.cursor() as cursor:
@@ -152,39 +75,87 @@ bootstrap = Bootstrap(app)
 
 @app.route("/")
 def index():
-    # app.logger.debug("This is debug message.")
-    # app.logger.info("This is info message.")
-    # app.logger.warning("This is warning message.")
-    # app.logger.error("This is error message.")
-    # app.logger.critical("This is critical message.")
     return render_template("main.html")
 
 
 @app.route("/call_from_ajax", methods=["POST"])
 def callfromajax():
+    # filename = ""
     if request.method == "POST":
         try:
             encoded_string = ""
             filename = f'output_{request.form["fileSpecNo"]}.pdf'
-            invoice_no = request.form["invoiceNo"]
-            page_layout.add(_build_invoice_information(**request.form))
+            # filename = 'sample.pdf'
+            file_path = Path(__file__).parent / "tmp" / filename
+            # file_path = f'app/tmp/{filename}'
+            app.logger.warning(f"filename: {filename}")
+            # app.logger.warning(f"filepath: {file_path}")
+            invoiceNo = request.form["invoiceNo"]
+            issueDate = request.form["issueDate"]
+            issuerName = request.form["issuerName"]
 
-            # Empty paragraph for spacing
-            page_layout.add(Paragraph(" "))
-            with open(f"app/tmp/{filename}", "wb") as pdf_file_handle:
-                PDF.dumps(pdf_file_handle, pdf)
-                # logging.warning("encoded_string: " + str(encoded_string))
-        except Exception as e:
-            # message = str(e)
-            print(e)
-        with open(f"app/tmp/{filename}", "rb") as pdf_file:
+            app.logger.warning(f"invoice_no: {invoiceNo}, issueDate: {issueDate}")
+
+            # A4の新規PDFファイルを作成
+            page = canvas.Canvas(f'app/tmp/{filename}', pagesize=portrait(A4))
+            app.logger.warning(f'page: {page}')
+
+            # フォントの設定(第1引数：フォント、第2引数：サイズ)
+            page.setFont("kokuri", 18)
+
+
+            page.drawRightString(20*cm, 28*cm, f'発行日:{issueDate}')
+            page.drawRightString(20*cm, 27*cm, f'請求書番号:{invoiceNo}')
+            page.drawString(1*cm, 23*cm, f'{issuerName} 御中')
+            page.drawString(1*cm, 22*cm, f'ご請求金額:{request.form["amount"]} 円')
+            page.drawString(1*cm, 21*cm, f'お支払期限:{request.form["dueDate"]}')
+            page.drawRightString(20*cm, 23*cm, f'{request.form["registerCo"]}')
+            page.drawRightString(20*cm, 22*cm, f'{request.form["issuerAddress"]}')
+            page.drawRightString(20*cm, 21*cm, f'{request.form["issuerTel"]}')
+            
+            # 指定座標が左端となるように文字を挿入 Ａ４サイズは、縦２９．７cm、横２１．０cm
+            # フォントの設定(第1引数：フォント、第2引数：サイズ)
+            page.setFont("kokuri", 25)
+            page.drawString(10*cm, 25*cm, "請求書")
+
+            # 明細
+            # This Block Consist of Costumer Details
+            # roundRect 1&2: 左下隅の座標、 3: 幅、 4: 高さ、 5: 丸み
+            page.roundRect(40,80,520,100,5,stroke=1,fill=0)
+            page.setFont("kokuri",15)
+
+            # This Block Consist of Item Description
+            page.roundRect(40,200,520,300,5,stroke=1,fill=0)
+            page.line(40,470,560, 470)
+            page.drawCentredString(65,480,"No.")
+            page.drawCentredString(190,480,"品目")
+            page.drawCentredString(350,480,"単価")
+            page.drawCentredString(430,480,"数量")
+            page.drawCentredString(510,480,"税抜合計")
+            #  Drawing table for Item Description
+            page.line(90,200,90,500)
+            page.line(300,200,300,500)
+            page.line(400,200,400,500)
+            page.line(460,200,460,500)
+       
+            page.drawString(50,150,f'振込先: {request.form["bank"]}銀行  {request.form["bBranch"]}支店  {request.form["accountType"]}  {request.form["accountNo"]}  {request.form["accountName"]}')
+
+
+            # PDFファイルとして保存
+            page.save()
+        except:
+            pass
+
+        print(f"post_filename: {filename}")
+        with open(f'app/tmp/{filename}', "rb") as pdf_file:
             encoded_string = base64.b64encode(pdf_file.read())
 
         dict = {
-            "invoice_no": invoice_no,
+            "invoice_no": "9999",
             "encoded_string": encoded_string.decode(),
         }  # 辞書
     return json.dumps(dict)
+    # return "test"
 
 
 @app.route("/pdfdownload", methods=["GET"])
